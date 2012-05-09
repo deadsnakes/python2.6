@@ -26,6 +26,18 @@ link-system-expat.diff
 plat-gnukfreebsd.diff
 link-whole-archive.diff
 
+bsddb-libpath.diff
+bsddb-version.diff
+issue7609.diff
+issue8140.diff
+issue8154.diff
+issue8233.diff
+issue9729.diff
+issue762963.diff
+issue1113244.diff
+locale-module-updates.diff
+no-openssl-v2.diff
+
 # This patch is Ubuntu-specific.
 langpack-gettext.diff
 

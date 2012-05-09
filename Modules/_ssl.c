@@ -303,7 +303,14 @@ newPySSLObject(PySocketSockObject *Sock, char *key_file, char *cert_file,
     else if (proto_version == PY_SSL_VERSION_SSL3)
         self->ctx = SSL_CTX_new(SSLv3_method()); /* Set up context */
     else if (proto_version == PY_SSL_VERSION_SSL2)
+#ifdef OPENSSL_NO_SSL2
+    {
+        errstr = ERRSTR("SSLv2 support not provided anymore on Debian");
+        goto fail;
+    }
+#else
         self->ctx = SSL_CTX_new(SSLv2_method()); /* Set up context */
+#endif
     else if (proto_version == PY_SSL_VERSION_SSL23)
         self->ctx = SSL_CTX_new(SSLv23_method()); /* Set up context */
     PySSL_END_ALLOW_THREADS

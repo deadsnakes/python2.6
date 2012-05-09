@@ -782,7 +782,7 @@ class PyBuildExt(build_ext):
         # a release.  Most open source OSes come with one or more
         # versions of BerkeleyDB already installed.
 
-        max_db_ver = (4, 7)
+        max_db_ver = (4, 8)
         min_db_ver = (3, 3)
         db_setup_debug = False   # verbose debug prints from this script?
 
@@ -960,7 +960,13 @@ class PyBuildExt(build_ext):
             if db_setup_debug:
                 print "bsddb using BerkeleyDB lib:", db_ver, dblib
                 print "bsddb lib dir:", dblib_dir, " inc dir:", db_incdir
-            db_incs = [db_incdir]
+            # only add db_incdir/dblib_dir if not in the standard paths
+            if db_incdir in inc_dirs:
+                db_incs = []
+            else:
+                db_incs = [db_incdir]
+            if dblib_dir[0] in lib_dirs:
+                dblib_dir = []
             dblibs = [dblib]
             # We add the runtime_library_dirs argument because the
             # BerkeleyDB lib we're linking against often isn't in the
@@ -1307,19 +1313,26 @@ class PyBuildExt(build_ext):
         #
         # More information on Expat can be found at www.libexpat.org.
         #
-        expatinc = os.path.join(os.getcwd(), srcdir, 'Modules', 'expat')
-        define_macros = [
-            ('HAVE_EXPAT_CONFIG_H', '1'),
-        ]
+        if '--with-system-expat' in sysconfig.get_config_var("CONFIG_ARGS"):
+            expat_inc = []
+            define_macros = []
+            expat_lib = ['expat']
+            expat_sources = []
+        else:
+            expat_inc = [os.path.join(os.getcwd(), srcdir, 'Modules', 'expat')]
+            define_macros = [
+                ('HAVE_EXPAT_CONFIG_H', '1'),
+            ]
+            expat_lib = []
+            expat_sources = ['expat/xmlparse.c',
+                             'expat/xmlrole.c',
+                             'expat/xmltok.c']
 
         exts.append(Extension('pyexpat',
                               define_macros = define_macros,
-                              include_dirs = [expatinc],
-                              sources = ['pyexpat.c',
-                                         'expat/xmlparse.c',
-                                         'expat/xmlrole.c',
-                                         'expat/xmltok.c',
-                                         ],
+                              include_dirs = expat_inc,
+                              libraries = expat_lib,
+                              sources = ['pyexpat.c'] + expat_sources
                               ))
 
         # Fredrik Lundh's cElementTree module.  Note that this also
@@ -1329,7 +1342,8 @@ class PyBuildExt(build_ext):
             define_macros.append(('USE_PYEXPAT_CAPI', None))
             exts.append(Extension('_elementtree',
                                   define_macros = define_macros,
-                                  include_dirs = [expatinc],
+                                  include_dirs = expat_inc,
+                                  libraries = expat_lib,
                                   sources = ['_elementtree.c'],
                                   ))
         else:
