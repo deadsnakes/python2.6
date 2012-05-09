@@ -1,11 +1,11 @@
 Source: python2.6
 Section: python
 Priority: optional
-Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Matthias Klose <doko@debian.org>
-Build-Depends: debhelper (>= 5), quilt, autoconf, libreadline-dev, libncursesw5-dev (>= 5.3), tk8.5-dev, zlib1g-dev, blt-dev (>= 2.4z), libssl-dev, sharutils, libbz2-dev, libbluetooth-dev [linux-any], locales [!armel !avr32 !hppa !ia64 !mipsel], libsqlite3-dev, libffi-dev (>= 3.0.5), mime-support, libgpm2 [linux-any], netbase, lsb-release, bzip2, libdb4.8-dev, gdb, python
-Build-Depends-Indep: python-sphinx
-Build-Conflicts: tcl8.3-dev, tk8.3-dev, tcl8.4-dev, tk8.4-dev, python2.6-xml, python-xml, libgdbm-dev, autoconf2.13
+Maintainer: Felix Krull <f_krull@gmx.de>
+Build-Depends: debhelper (>= 5), quilt, autoconf, libreadline-dev, libncursesw5-dev (>= 5.3), tk8.5-dev, zlib1g-dev, blt-dev (>= 2.4z), libssl-dev, sharutils, libbz2-dev, libbluetooth-dev [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64], locales [!armel !avr32 !hppa !ia64 !mipsel], libsqlite3-dev, libffi-dev (>= 3.0.5), mime-support, libgpm2 [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64], netbase, lsb-release, bzip2, libdb4.8-dev, gdb, python, libgdbm-dev
+Build-Depends-Indep: python-sphinx (>= 1.0.7)
+Build-Conflicts: tcl8.3-dev, tk8.3-dev, tcl8.4-dev, tk8.4-dev, python2.6-xml, python-xml, autoconf2.13
 XS-Python-Version: 2.6
 Standards-Version: 3.9.2
 Vcs-Browser: https://code.launchpad.net/~doko/python/pkg2.6-debian
@@ -17,8 +17,6 @@ Priority: standard
 Depends: python2.6-minimal (= ${binary:Version}), mime-support, ${shlibs:Depends}, ${misc:Depends}
 Suggests: python2.6-doc, binutils
 Provides: python2.6-cjkcodecs, python2.6-ctypes, python2.6-elementtree, python2.6-celementtree, python2.6-wsgiref, python2.6-profiler
-Conflicts: python-profiler (<= 2.7.1-2)
-Replaces: python-profiler (<= 2.7.1-2)
 XB-Python-Version: 2.6
 Description: An interactive high-level object-oriented language (version 2.6)
  Version 2.6 of the high-level, interactive object oriented language,
@@ -31,35 +29,7 @@ Priority: required
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: python2.6
 Suggests: binfmt-support
-Replaces: python2.6 (<< 2.6.5+20100630-2)
-Breaks: python-central (<< 0.6.14),
-  pitivi (<< 0.13),
-  python-freevo (<< 1.8.4~svn11545),
-  python-gadfly (<< 1.0.0-14~),
-  python-nevow (<< 0.9.32),
-  python-scientific (<< 2.8),
-  qmtest (<< 2.4.1),
-  aap (<< 1.090-1~),
-  bkchem (<< 0.12.4),
-  python-mpmath (<< 0.10),
-  python-plwm (<< 2.6a+20080530-1.1~),
-  python-pydoctor (<< 0.2-4.1~),
-  python-pyscript (<< 0.6.1-3~),
-  python-scapy (<< 2.0),
-  python-sympy (<< 0.6.3),
-  pythoncad (<< 0.1.36-1~),
-  rawdog (<< 2.12),
-  python-pmock (<< 0.3-5.2~),
-  polgen (<< 1.3-6~),
-  doclifter (<< 2.3-2.1~),
-  fvwm-crystal (<< 3.0.5.dfsg-4~),
-  gforge-web-apache2 (<< 5.0.1+svn10155),
-  mftrace (<< 1.2.15) 
-Conflicts: binfmt-support (<< 1.1.2),
-  libboost-python-dev (<< 1.34.1-16),
-  libboost-dbg (<< 1.34.1-16),
-  libboost-python1.35-dev (<< 1.35.0-10),
-  libboost1.35-dbg (<< 1.35.0-10)
+Conflicts: binfmt-support (<< 1.1.2)
 XB-Python-Runtime: python2.6
 XB-Python-Version: 2.6
 Description: A minimal subset of the Python language (version 2.6)
@@ -71,7 +41,7 @@ Description: A minimal subset of the Python language (version 2.6)
 Package: libpython2.6
 Architecture: any
 Section: libs
-Priority: optional
+Priority: standard
 Depends: python2.6 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Replaces: python2.6 (<< 2.6)
 Description: Shared Python runtime library (version 2.6)
@@ -93,7 +63,6 @@ Package: python2.6-dev
 Architecture: any
 Depends: python2.6 (= ${binary:Version}), libpython2.6 (= ${binary:Version}), libssl-dev, ${shlibs:Depends}, ${misc:Depends}
 Recommends: libc6-dev | libc-dev
-Replaces: python2.6 (<< 2.6.2-1)
 Description: Header files and a static library for Python (v2.6)
  Header files, a static library and development tools for building
  Python (v2.6) modules, extending the Python interpreter or embedding
@@ -103,7 +72,7 @@ Description: Header files and a static library for Python (v2.6)
 
 Package: idle-python2.6
 Architecture: all
-Depends: python2.6, python-tk (>= 2.6~a3), python2.6-tk, ${misc:Depends}
+Depends: python2.6, python2.6-tk, ${misc:Depends}
 Enhances: python2.6
 Replaces: python2.6 (<< 2.6.1-2)
 XB-Python-Version: 2.6
@@ -137,7 +106,79 @@ Section: debug
 Architecture: any
 Priority: extra
 Depends: python2.6 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Suggests: python-gdbm-dbg, python-tk-dbg
+Suggests: python2.6-gdbm-dbg, python2.6-tk-dbg
 Description: Debug Build of the Python Interpreter (version 2.6)
  Python interpreter configured with --pydebug. Dynamically loaded modules are
  searched in /usr/lib/python2.6/lib-dynload/debug first.
+
+
+Package: python2.6-tk
+Architecture: any
+Depends: python2.6, ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}
+Provides: ${python:Provides}
+Suggests: tix, python2.6-tk-dbg
+XB-Python-Version: ${python:Versions}
+Description: Tkinter - Writing Tk applications with Python (v2.6)
+ A module for writing portable GUI applications with Python (v2.6) using Tk.
+ Also known as Tkinter.
+
+Package: python2.6-gdbm
+Architecture: any
+Depends: python2.6, ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}
+Provides: ${python:Provides}
+Suggests: python2.6-gdbm-dbg
+XB-Python-Version: ${python:Versions}
+Description: GNU dbm database support for Python (v2.6)
+ GNU dbm database module for Python (v2.6). Install this if you want to
+ create or read GNU dbm database files with Python.
+
+Package: python2.6-tk-dbg
+Architecture: any
+Priority: extra
+Section: debug
+Depends: python2.6, ${python:Depends}, python2.6-tk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Tkinter - Writing Tk applications with Python (v2.6 debug extension)
+ A module for writing portable GUI applications with Python (v2.6) using Tk.
+ Also known as Tkinter.
+ .
+ This package contains the extensions built for the python debug interpreter.
+
+Package: python2.6-gdbm-dbg
+Architecture: any
+Priority: extra
+Section: debug
+Depends: python2.6, ${python:Depends}, python2.6-gdbm (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: GNU dbm database support for Python (v2.6 debug extension)
+ GNU dbm database module for Python (v2.6). Install this if you want to
+ create or read GNU dbm database files with Python.
+ .
+ This package contains the extensions built for the python debug interpreter.
+
+
+Package: python2.6-complete
+Architecture: all
+Priority: standard
+Depends:
+ python2.6 (>= ${binary:Version}),
+ python2.6-minimal (>= ${binary:Version}),
+ libpython2.6 (>= ${binary:Version}),
+ python2.6-examples (>= ${binary:Version}),
+ python2.6-dev (>= ${binary:Version}),
+ idle-python2.6 (>= ${binary:Version}),
+ python2.6-doc (>= ${binary:Version}),
+ python2.6-dbg (>= ${binary:Version}),
+ python2.6-tk (>= ${binary:Version}),
+ python2.6-gdbm (>= ${binary:Version}),
+ python2.6-tk-dbg (>= ${binary:Version}),
+ python2.6-gdbm-dbg (>= ${binary:Version}),
+ ${shlibs:Depends}, ${misc:Depends}
+Suggests: python-distribute-deadsnakes
+XB-Python-Version: 2.6
+Description: An interactive high-level object-oriented language (version 2.6)
+ Version 2.6 of the high-level, interactive object oriented language,
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+ .
+ This package depends on all individual packages that were generated from the
+ python2.6 source package.
+
