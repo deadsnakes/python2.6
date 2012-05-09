@@ -1438,6 +1438,12 @@ _PySys_Init(void)
     FlagsType.tp_init = NULL;
     FlagsType.tp_new = NULL;
 
+#ifdef Py_DEBUG
+	PyDict_SetItemString(sysdict, "pydebug", Py_True);
+#else
+	PyDict_SetItemString(sysdict, "pydebug", Py_False);
+#endif
+
 #undef SET_SYS_FROM_STRING
     if (PyErr_Occurred())
         return NULL;

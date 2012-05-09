@@ -2,9 +2,9 @@
 
 --- a/Lib/platform.py
 +++ b/Lib/platform.py
-@@ -288,6 +288,10 @@
-             id = l[1]
-     return '', version, id
+@@ -290,6 +290,10 @@
+         if parsed != output:
+             print (input, parsed)
  
 +_distributor_id_file_re = re.compile("(?:DISTRIB_ID\s*=)\s*(.*)", re.I)
 +_release_file_re = re.compile("(?:DISTRIB_RELEASE\s*=)\s*(.*)", re.I)
@@ -13,7 +13,7 @@
  def linux_distribution(distname='', version='', id='',
  
                         supported_dists=_supported_dists,
-@@ -312,6 +316,25 @@
+@@ -314,6 +318,25 @@
          args given as parameters.
  
      """

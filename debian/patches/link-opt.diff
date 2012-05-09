@@ -2,18 +2,16 @@
 
 --- a/configure.in
 +++ b/configure.in
-@@ -1867,8 +1867,8 @@
+@@ -1829,7 +1829,7 @@
+ 			fi
  		fi
  		;;
- 	Linux*|GNU*|QNX*)
--		LDSHARED='$(CC) -shared'
--		LDCXXSHARED='$(CXX) -shared';;
-+		LDSHARED='$(CC) -shared -Wl,-O1 -Wl,-Bsymbolic-functions'
-+		LDCXXSHARED='$(CXX) -shared -Wl,-O1 -Wl,-Bsymbolic-functions';;
- 	BSD/OS*/4*)
- 		LDSHARED="gcc -shared"
- 		LDCXXSHARED="g++ -shared";;
-@@ -1970,7 +1970,7 @@
+-	Linux*|GNU*|QNX*) LDSHARED='$(CC) -shared';;
++	Linux*|GNU*|QNX*) LDSHARED='$(CC) -shared -Wl,-O1 -Wl,-Bsymbolic-functions';;
+ 	BSD/OS*/4*) LDSHARED="gcc -shared";;
+ 	FreeBSD*)
+ 		if [[ "`$CC -dM -E - </dev/null | grep __ELF__`" != "" ]]
+@@ -1916,7 +1916,7 @@
  	    LINKFORSHARED="-Wl,-E -Wl,+s";;
  #	    LINKFORSHARED="-Wl,-E -Wl,+s -Wl,+b\$(BINLIBDEST)/lib-dynload";;
  	BSD/OS/4*) LINKFORSHARED="-Xlinker -export-dynamic";;
