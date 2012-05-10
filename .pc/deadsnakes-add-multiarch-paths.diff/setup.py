@@ -360,8 +360,6 @@ class PyBuildExt(build_ext):
         # On Debian /usr/local is always used, so we don't include it twice
         #add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
         #add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
-        add_dir_to_list(self.compiler.include_dirs,
-                        '/usr/lib/%s' % os.environ['DEB_BUILD_GNU_TYPE'])
 
         # Add paths specified in the environment variables LDFLAGS and
         # CPPFLAGS for header and library files.
@@ -414,8 +412,6 @@ class PyBuildExt(build_ext):
         lib_dirs = self.compiler.library_dirs + [
             '/lib64', '/usr/lib64',
             '/lib', '/usr/lib',
-            '/lib/%s' % os.environ['DEB_BUILD_GNU_TYPE'],
-            '/usr/lib/%s' % os.environ['DEB_BUILD_GNU_TYPE'],
             ]
         inc_dirs = self.compiler.include_dirs + ['/usr/include']
         exts = []
