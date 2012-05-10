@@ -1924,12 +1924,10 @@ class PyBuildExt(build_ext):
             # in /usr/include/ffi
             inc_dirs.append('/usr/include/ffi')
 
-        ffi_inc = ["/usr/include/%s" % subprocess.check_output(
-                        "dpkg-architecture -qDEB_BUILD_GNU_TYPE",
-                        shell=True).strip(),
+        ffi_inc = ["/usr/include/%s" % os.environ["DEB_BUILD_GNU_TYPE"].strip(),
                    sysconfig.get_config_var("LIBFFI_INCLUDEDIR")]
-         if not ffi_inc or ffi_inc[0] == '':
-             ffi_inc = find_file('ffi.h', [], inc_dirs)
+        if not ffi_inc or ffi_inc[0] == '':
+            ffi_inc = find_file('ffi.h', [], inc_dirs)
         if ffi_inc is not None:
             ffi_h = ffi_inc[0] + '/ffi.h'
             fp = open(ffi_h)

@@ -15,6 +15,7 @@ vafilt = $(subst $(2)=,,$(filter $(2)=%,$(1)))
 DEB_HOST_ARCH		?= $(call vafilt,$(DPKG_VARS),DEB_HOST_ARCH)
 DEB_HOST_ARCH_BITS	?= $(call vafilt,$(DPKG_VARS),DEB_HOST_ARCH_BITS)
 DEB_HOST_ARCH_OS	?= $(call vafilt,$(DPKG_VARS),DEB_HOST_ARCH_OS)
+DEB_BUILD_GNU_TYPE  ?= $(call vafilt,$(DPKG_VARS),DEB_BUILD_GNU_TYPE)
 
 changelog_values := $(shell dpkg-parsechangelog \
 			| awk '/^(Version|Source):/ {print $$2}')
