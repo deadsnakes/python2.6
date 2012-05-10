@@ -974,12 +974,12 @@ else
 	dh_strip -p$(p_gdbm) --dbg-package=$(p_gdbm_dbg)
 endif
 	dh_strip -a -N$(p_dbg) -N$(p_tk) -N$(p_gdbm) -Xdebug -Xdbg --dbg-package=$(p_dbg)
-	cp Tools/gdb/libpython.py $(d_dbg)/usr/lib/debug/usr/bin/$(PVER)-gdb.py
-	ln -sf $(PVER)-gdb.py $(d_dbg)/usr/lib/debug/usr/bin/$(PVER)-dbg-gdb.py
-	ln -sf ../bin/$(PVER)-gdb.py \
-		$(d_dbg)/usr/lib/debug/usr/lib/lib$(PVER).so.1.0-gdb.py
-	ln -sf ../bin/$(PVER)-gdb.py \
-		$(d_dbg)/usr/lib/lib$(PVER)_d.so.1.0-gdb.py
+	#cp Tools/gdb/libpython.py $(d_dbg)/usr/lib/debug/usr/bin/$(PVER)-gdb.py
+	#ln -sf $(PVER)-gdb.py $(d_dbg)/usr/lib/debug/usr/bin/$(PVER)-dbg-gdb.py
+	#ln -sf ../bin/$(PVER)-gdb.py \
+	#	$(d_dbg)/usr/lib/debug/usr/lib/lib$(PVER).so.1.0-gdb.py
+	#ln -sf ../bin/$(PVER)-gdb.py \
+	#	$(d_dbg)/usr/lib/lib$(PVER)_d.so.1.0-gdb.py
 	dh_link -a
 	dh_compress -a -X.py
 	dh_fixperms -a
