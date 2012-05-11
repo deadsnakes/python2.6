@@ -1,8 +1,10 @@
 python2.6 (2.6.8-1+precise1) precise; urgency=low
 
   * Imported package from Ubuntu Oneiric.
+  * Imported new upstream version 2.6.8.
+  * Backported build info string from Python 2.7.3.
 
- -- Felix Krull <f_krull@gmx.de>  Wed, 09 May 2012 23:09:17 +0200
+ -- Felix Krull <f_krull@gmx.de>  Fri, 11 May 2012 23:41:41 +0200
 
 python2.6 (2.6.7-4ubuntu1) oneiric; urgency=low
 
