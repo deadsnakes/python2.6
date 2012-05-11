@@ -359,7 +359,7 @@ class PyBuildExt(build_ext):
         #add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
         #add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
         add_dir_to_list(self.compiler.include_dirs,
-                        '/usr/lib/%s' % os.environ['DEB_BUILD_GNU_TYPE'])
+                        '/usr/include/%s' % os.environ['DEB_BUILD_MULTIARCH'])
 
         # Add paths specified in the environment variables LDFLAGS and
         # CPPFLAGS for header and library files.
@@ -412,8 +412,8 @@ class PyBuildExt(build_ext):
         lib_dirs = self.compiler.library_dirs + [
             '/lib64', '/usr/lib64',
             '/lib', '/usr/lib',
-            '/lib/%s' % os.environ['DEB_BUILD_GNU_TYPE'],
-            '/usr/lib/%s' % os.environ['DEB_BUILD_GNU_TYPE'],
+            '/lib/%s' % os.environ['DEB_BUILD_MULTIARCH'],
+            '/usr/lib/%s' % os.environ['DEB_BUILD_MULTIARCH'],
             ]
         inc_dirs = self.compiler.include_dirs + ['/usr/include']
         exts = []
