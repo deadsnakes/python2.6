@@ -42,3 +42,4 @@ deadsnakes-ncursesw-include-dir.diff
 deadsnakes-add-multiarch-paths.diff
 deadsnakes-backport-dbm-liborder.diff
 deadsnakes-linux2-platform.diff
+deadsnakes-assert-use-system-ffi.diff
