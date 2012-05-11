@@ -1,6 +1,6 @@
 --- a/setup.py
 +++ b/setup.py
-@@ -360,6 +360,8 @@
+@@ -358,6 +358,8 @@
          # On Debian /usr/local is always used, so we don't include it twice
          #add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
          #add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
@@ -9,7 +9,7 @@
  
          # Add paths specified in the environment variables LDFLAGS and
          # CPPFLAGS for header and library files.
-@@ -412,6 +414,8 @@
+@@ -410,6 +412,8 @@
          lib_dirs = self.compiler.library_dirs + [
              '/lib64', '/usr/lib64',
              '/lib', '/usr/lib',
