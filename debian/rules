@@ -692,9 +692,11 @@ endif
 		usr/lib/python$(VER)/config \
 		usr/include/python$(VER) \
 		usr/lib/libpython$(VER).so \
-		usr/lib/libpython$(VER).a \
 		usr/bin/python$(VER)-config \
 		usr/lib/python$(VER)/distutils/command/wininst-*.exe
+
+	dh_link -p$(p_dev) usr/lib/python$(VER)/config/libpython$(VER).a \
+		usr/lib/libpython$(VER).a
 
 	mv $(d_dev)/usr/lib/python$(VER)/config/Makefile \
 		$(d)/usr/lib/python$(VER)/config/
