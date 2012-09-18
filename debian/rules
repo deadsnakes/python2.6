@@ -2,6 +2,7 @@
 # Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
 
 unexport LANG LC_ALL LC_CTYPE LC_COLLATE LC_TIME LC_NUMERIC LC_MESSAGES
+unexport CFLAGS CXXFLAGS CPPFLAGS
 
 export SHELL = /bin/bash
 
@@ -10,12 +11,9 @@ export SHELL = /bin/bash
 
 DEB_BUILD_OPTIONS := "nocheck nobench"
 
-vafilt = $(subst $(2)=,,$(filter $(2)=%,$(1)))
-
-DEB_HOST_ARCH		?= $(call vafilt,$(DPKG_VARS),DEB_HOST_ARCH)
-DEB_HOST_ARCH_BITS	?= $(call vafilt,$(DPKG_VARS),DEB_HOST_ARCH_BITS)
-DEB_HOST_ARCH_OS	?= $(call vafilt,$(DPKG_VARS),DEB_HOST_ARCH_OS)
-DEB_BUILD_MULTIARCH  ?= $(call vafilt,$(DPKG_VARS),DEB_BUILD_MULTIARCH)
+DEB_HOST_ARCH		?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_ARCH_OS	?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_HOST_ARCH_BITS	?= $(shell dpkg-architecture -qDEB_HOST_ARCH_BITS)
 
 changelog_values := $(shell dpkg-parsechangelog \
 			| awk '/^(Version|Source):/ {print $$2}')
@@ -35,9 +33,6 @@ ifeq ($(on_buildd),yes)
   ifneq (,$(findstring $(DEB_HOST_ARCH), hppa mips mipsel s390))
     WITHOUT_CHECK := yes
   endif
-  ifneq (,$(findstring $(DEB_HOST_ARCH), hurd-i386))
-    WITHOUT_BENCH := yes
-  endif
 endif
 
 COMMA = ,
@@ -52,6 +47,9 @@ export VER=2.6
 export NVER=2.7
 export PVER=python2.6
 export PRIORITY=$(shell echo $(VER) | tr -d '.')0
+
+# For setup.py to feast upon.
+#export DEB_HOST_MULTIARCH=$(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 PREVVER	:= $(shell awk '/^python/ && NR > 1 {print substr($$2,2,length($$2)-2); exit}' debian/changelog)
 
@@ -89,12 +87,13 @@ PY_INTERPRETER = /usr/bin/python$(VER)
 ifeq ($(DEFAULT_VERSION),yes)
   PY_PRIO = standard
   #PYSTDDEP = , python (>= $(VER))
+  ifeq ($(distribution),Ubuntu)
+    PY_MINPRIO = required
+  else
+    PY_MINPRIO = $(PY_PRIO)
+  endif
 else
   PY_PRIO = optional
-endif
-ifeq ($(distribution),Ubuntu)
-  PY_MINPRIO = required
-else
   PY_MINPRIO = $(PY_PRIO)
 endif
 with_fpectl = yes
@@ -106,7 +105,8 @@ ifeq ($(DEB_HOST_ARCH),alpha)
     OPTSETTINGS = OPT="-g -O2 -fwrapv -mieee -Wall -Wstrict-prototypes"
     OPTDEBUGSETTINGS = OPT="-g -O0 -fwrapv -mieee -Wall -Wstrict-prototypes"
 endif
-ifeq ($(DEB_HOST_ARCH),m68k)
+# issues with ia64 and m68k with -O3
+ifneq (,$(filter $(DEB_HOST_ARCH),ia64 m68k))
     OPTSETTINGS = OPT="-fwrapv -g -O2 -Wall -Wstrict-prototypes"
 endif
 
@@ -165,8 +165,8 @@ stamps/stamp-build: stamps/stamp-build-static stamps/stamp-build-shared stamps/s
 
 PROFILE_EXCLUDES = test_compiler test_distutils test_platform test_subprocess \
 	test_pstats test_profile test_multiprocessing test_cprofile \
-	test_socketserver \
 	test_thread test_threaded_import test_threadedtempfile \
+	test_socketserver \
 	test_threading test_threading_local test_threadsignals \
 	test_dbm_dumb test_dbm_ndbm test_pydoc test_sundry test_gdb \
 
@@ -235,6 +235,7 @@ stamps/stamp-configure-shared: stamps/stamp-configure
 	    ../configure \
 		--enable-shared \
 		$(common_configure_args)
+	# Bake minimal extension modules into the interpreter.
 	egrep \
 	  "^#($$(awk '$$2 ~ /^extension$$/ {print $$1}' debian/PVER-minimal.README.Debian.in | tr '\012' '|')XX)" \
 	    Modules/Setup.dist \
@@ -255,6 +256,7 @@ stamps/stamp-configure-static: stamps/stamp-configure
 	  CC="$(CC)" $(OPTSETTINGS) \
 	    ../configure \
 		$(common_configure_args)
+	# Bake minimal extension modules into the interpreter.
 	egrep \
 	  "^#($$(awk '$$2 ~ /^extension$$/ {print $$1}' debian/PVER-minimal.README.Debian.in | tr '\012' '|')XX)" \
 	  Modules/Setup.dist | sed 's/^#//' \
@@ -280,6 +282,7 @@ stamps/stamp-configure-debug: stamps/stamp-configure
 	    ../configure \
 		$(common_configure_args) \
 		--with-pydebug
+	# Bake minimal extension modules into the interpreter.
 	egrep \
 	  "^#($$(awk '$$2 ~ /^extension$$/ {print $$1}' debian/PVER-minimal.README.Debian.in | tr '\012' '|')XX)" \
 	  Modules/Setup.dist | sed 's/^#//' \
@@ -306,6 +309,7 @@ stamps/stamp-configure-shared-debug: stamps/stamp-configure
 		$(common_configure_args) \
 		--enable-shared \
 		--with-pydebug
+	# Bake minimal extension modules into the interpreter.
 	egrep \
 	  "^#($$(awk '$$2 ~ /^extension$$/ {print $$1}' debian/PVER-minimal.README.Debian.in | tr '\012' '|')XX)" \
 	  Modules/Setup.dist \
@@ -346,13 +350,21 @@ ifeq ($(on_buildd),yes)
 endif
 TESTOPTS = -w -l -u$(TEST_RESOURCES)
 TEST_EXCLUDES =
+# not built from this source
+TEST_EXCLUDES += test_bsddb3
 ifeq ($(on_buildd),yes)
   TEST_EXCLUDES += test_tcl test_codecmaps_cn test_codecmaps_hk \
         test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw \
         test_normalization test_ossaudiodev
+  ifneq (,$(filter $(DEB_HOST_ARCH), powerpc))
+    TEST_EXCLUDES += test_threading
+  endif
 endif
 ifeq (,$(wildcard /dev/dsp))
   TEST_EXCLUDES += test_linuxaudiodev test_ossaudiodev
+endif
+ifneq (,$(filter $(DEB_HOST_ARCH), armel hppa powerpc))
+  TEST_EXCLUDES += test_multiprocessing
 endif
 ifneq (,$(filter $(DEB_HOST_ARCH), hppa))
   TEST_EXCLUDES += test_fork1 test_multiprocessing test_socketserver test_wait3 test_wait4 test_gdb
@@ -360,9 +372,9 @@ endif
 ifneq (,$(filter $(DEB_HOST_ARCH), arm avr32))
   TEST_EXCLUDES += test_ctypes
 endif
-#ifneq (,$(filter $(DEB_HOST_ARCH), m68k avr32 kfreebsd-amd64 kfreebsd-i386))
+ifneq (,$(filter $(DEB_HOST_ARCH), m68k avr32))
   TEST_EXCLUDES += test_bsddb3
-#endif
+endif
 ifneq (,$(filter $(DEB_HOST_ARCH), arm armel avr32 m68k))
   ifeq ($(on_buildd),yes)
     TEST_EXCLUDES += test_compiler
@@ -481,6 +493,7 @@ minimal-test:
 		mintest/lib/
 	cp -a $(foreach i,$(MIN_PACKAGES),Lib/$(i)) \
 		mintest/lib/
+	: # Don't install minimal extensions since those have been built statically.
 #	cp -p $(foreach i,$(MIN_EXTS),$(buildd_static)/build/lib*/$(i).so) \
 #		mintest/dynlib/
 	cp -p Lib/unittest.py mintest/lib/
@@ -627,6 +640,9 @@ endif
 	mv $(d)/$(scriptdir)/lib-dynload/Python-$(VER)*.egg-info \
 		$(d)/$(scriptdir)/lib-dynload/Python-$(VER).egg-info
 
+	: # Remove python2 binary.
+	rm -f $(d)/usr/bin/python2 $(d)/usr/bin/python2-config $(d)/usr/lib/pkgconfig/python2.pc
+
 	dh_installdirs -p$(p_lib) \
 		$(scriptdir)/config \
 		usr/share/doc
@@ -657,14 +673,18 @@ endif
 	dh_installdirs -p$(p_min) \
 		etc/$(PVER) \
 		usr/bin \
+		usr/include/$(PVER) \
 		usr/share/man/man1 \
-		$(scriptdir)/lib-dynload
+		$(scriptdir)/lib-dynload \
+		$(scriptdir)/config
 	DH_COMPAT=2 dh_movefiles -p$(p_min) --sourcedir=$(d) \
 		usr/bin/python$(VER) \
 		usr/share/man/man1/python$(VER).1 \
 		$(foreach i,$(MIN_MODS),$(scriptdir)/$(i).py) \
 		$(foreach i,$(MIN_PACKAGES),$(scriptdir)/$(i)) \
 		$(foreach i,$(MIN_ENCODINGS),$(scriptdir)/$(i)) \
+		$(scriptdir)/config/Makefile \
+		usr/include/$(PVER)/pyconfig.h \
 		$(scriptdir)/site.py
 
 #		$(foreach i,$(MIN_EXTS),$(scriptdir)/lib-dynload/$(i).so) \
@@ -678,6 +698,7 @@ endif
 #	mv $(d)/usr/share/include/python$(VER)/* $(d)/usr/include/python$(VER)/.
 #	rm -rf $(d)/usr/share/include
 	dh_installdirs -p$(p_dev) \
+		usr/bin \
 		usr/share/doc/python$(VER) \
 		$(scriptdir) \
 		$(scriptdir)/doc/html \
@@ -692,16 +713,16 @@ endif
 		usr/lib/python$(VER)/config \
 		usr/include/python$(VER) \
 		usr/lib/libpython$(VER).so \
-		usr/bin/python$(VER)-config \
+		usr/lib/pkgconfig/python-$(VER).pc \
 		usr/lib/python$(VER)/distutils/command/wininst-*.exe
+	mv $(d)/usr/lib/libpython$(VER).a $(d_dev)/usr/lib/$(PVER)/config/
 
 	dh_link -p$(p_dev) usr/lib/python$(VER)/config/libpython$(VER).a \
 		usr/lib/libpython$(VER).a
 
-	mv $(d_dev)/usr/lib/python$(VER)/config/Makefile \
-		$(d)/usr/lib/python$(VER)/config/
-	mv $(d_dev)/usr/include/python$(VER)/pyconfig.h \
-		$(d)/usr/include/python$(VER)/
+	: # install $(PVER)-config into $(p_dev)
+	dh_movefiles -p$(p_dev) --sourcedir=$(d) usr/bin/$(PVER)-config
+
 	cp -p $(buildd_shared)/libpython$(VER)-pic.a \
 		$(d_dev)/usr/lib/python$(VER)/config/
 
@@ -733,6 +754,8 @@ endif
 	rm -rf $(d)/$(scriptdir)/sqlite3/test
 	rm -rf $(d)/$(scriptdir)/distutils/tests
 	rm -rf $(d)/$(scriptdir)/lib2to3/tests
+	rm -rf $(d)/$(scriptdir)/unittest/test
+	rm -rf $(d)/$(scriptdir)/lib-tk/test
 
 	: # IDLE
 	mv $(d)/usr/bin/idle $(d)/usr/bin/idle-python$(VER)
@@ -845,11 +868,13 @@ endif
 		usr/share/man/man1 \
 		$(scriptdir)/lib-dynload \
 		usr/include/$(PVER)_d \
+		usr/lib/pkgconfig \
 		usr/share/doc/$(p_base)
 	cp -p Misc/SpecialBuilds.txt $(d_dbg)/usr/share/doc/$(p_base)/
 	cp -p debian/$(PVER)-dbg.README.Debian \
 		$(d_dbg)/usr/share/doc/$(p_base)/README.debug
 	cp -p $(buildd_debug)/python $(d_dbg)/usr/bin/$(PVER)-dbg
+	: # create $(PVER)-dbg-config from regular $(PVER)-config
 	sed '1s,#!.*python[^ ]*\(.*\),#! $(PY_INTERPRETER)-dbg\1,' \
 		$(d)-dbg/usr/bin/$(PVER)-config \
 		> $(d_dbg)/usr/bin/$(PVER)-dbg-config
@@ -859,6 +884,11 @@ endif
 	cp -p $(buildd_shdebug)/libpython$(VER)_d.so.1.0 $(d_dbg)/usr/lib/
 	ln -sf libpython$(VER)_d.so.1.0 $(d_dbg)/usr/lib/libpython$(VER)_d.so.1
 	ln -sf libpython$(VER)_d.so.1 $(d_dbg)/usr/lib/libpython$(VER)_d.so
+	sed -e '/^Libs:/s,-lpython$(VER),-lpython$(VER)_d,' \
+	  -e '/^Cflags:/s,python$(VER),python$(VER)_d,' \
+	  $(d)-dbg/usr/lib/pkgconfig/python-$(VER).pc \
+	  > $(d_dbg)/usr/lib/pkgconfig/python-$(VER)-dbg.pc
+	
 ifeq ($(with_gdbm),yes)
 	# move debug files to corresponding debug package
 	dh_installdirs -p$(p_gdbm_dbg) $(scriptdir)/lib-dynload
@@ -876,8 +906,8 @@ ifeq ($(with_tk),yes)
 endif
 	rm -f $(d_dbg)/$(scriptdir)/lib-dynload/_tkinter_d.so
 	rm -f $(d_dbg)/usr/lib/debug/$(scriptdir)/lib-dynload/_tkinter.so
-	
-#	rm -f $(d_dbg)/$(scriptdir)/lib-dynload/_bsddb_d.so
+
+
 
 	cp -a $(d)-dbg/$(scriptdir)/config_d $(d_dbg)/$(scriptdir)/
 	ln -sf ../../libpython$(VER)_d.so \
