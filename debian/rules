@@ -562,7 +562,7 @@ endif
 stamps/stamp-control: generated-files
 	touch stamps/stamp-control
 
-clean: control-file
+clean: generated-files
 	dh_testdir
 	dh_testroot
 	rm -rf stamps

@@ -1,0 +1,4 @@
+python2.6 source: unknown-field-in-dsc original-maintainer
+python2.6 source: debian-rules-ignores-make-clean-error *
+python2.6 source: outdated-autotools-helper-file *Modules/_ctypes/libffi/config.guess *
+python2.6 source: outdated-autotools-helper-file *Modules/_ctypes/libffi/config.sub *
