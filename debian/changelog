@@ -1,8 +1,9 @@
 python2.6 (2.6.8-3+precise1) precise; urgency=low
 
-  * 
+  * Have -complete not depend on -minimal.
+  * Generally improve package quality.
 
- -- Felix Krull <f_krull@gmx.de>  Fri, 21 Sep 2012 02:51:28 +0200
+ -- Felix Krull <f_krull@gmx.de>  Sun, 07 Oct 2012 13:04:10 +0200
 
 python2.6 (2.6.8-2+precise1) precise; urgency=low
 
