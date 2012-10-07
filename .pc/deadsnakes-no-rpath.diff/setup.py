@@ -991,14 +991,16 @@ class PyBuildExt(build_ext):
             if dblib_dir[0] in lib_dirs:
                 dblib_dir = []
             dblibs = [dblib]
-            # We don't add the runtime_library_dirs argument because the db
-            # library should always be in the dynamic library search path on
-            # Debian and later versions of lintian complain about rpath in
-            # binaries.
+            # We add the runtime_library_dirs argument because the
+            # BerkeleyDB lib we're linking against often isn't in the
+            # system dynamic library search path.  This is usually
+            # correct and most trouble free, but may cause problems in
+            # some unusual system configurations (e.g. the directory
+            # is on an NFS server that goes away).
             exts.append(Extension('_bsddb', ['_bsddb.c'],
                                   depends = ['bsddb.h'],
                                   library_dirs=dblib_dir,
-                                  #runtime_library_dirs=dblib_dir,
+                                  runtime_library_dirs=dblib_dir,
                                   include_dirs=db_incs,
                                   libraries=dblibs))
         else:
@@ -1104,7 +1106,7 @@ class PyBuildExt(build_ext):
                                   include_dirs=["Modules/_sqlite",
                                                 sqlite_incdir],
                                   library_dirs=sqlite_libdir,
-                                  #runtime_library_dirs=sqlite_libdir,
+                                  runtime_library_dirs=sqlite_libdir,
                                   extra_link_args=sqlite_extra_link_args,
                                   libraries=["sqlite3",]))
         else:
@@ -1205,7 +1207,7 @@ class PyBuildExt(build_ext):
                         print "building dbm using bdb"
                         dbmext = Extension('dbm', ['dbmmodule.c'],
                                            library_dirs=dblib_dir,
-                                           #runtime_library_dirs=dblib_dir,
+                                           runtime_library_dirs=dblib_dir,
                                            include_dirs=db_incs,
                                            define_macros=[
                                                ('HAVE_BERKDB_H', None),
