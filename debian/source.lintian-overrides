@@ -1,1 +1,2 @@
 python2.6 source: unknown-field-in-dsc original-maintainer
+python2.6 source: outdated-autotools-helper-file Modules/_ctypes/libffi/*
