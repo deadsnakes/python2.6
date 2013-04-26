@@ -44,3 +44,4 @@ deadsnakes-linux2-platform.diff
 deadsnakes-assert-use-system-ffi.diff
 deadsnakes-build-info-string-from-py2.7.diff
 deadsnakes-backport-pkg-config-support.diff
+deadsnakes-no-rpath.diff

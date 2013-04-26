@@ -3,17 +3,18 @@ Section: python
 Priority: optional
 Maintainer: Felix Krull <f_krull@gmx.de>
 XSBC-Original-Maintainer: Matthias Klose <doko@debian.org>
-Build-Depends: debhelper (>= 5), autoconf,
+Build-Depends: debhelper (>= 7), autoconf,
    mime-support, netbase, lsb-release, bzip2,
    zlib1g-dev, libbz2-dev, libdb-dev, libssl-dev, libreadline-dev,
    libncursesw5-dev (>= 5.3), tk8.5-dev, blt-dev (>= 2.4z), libgpm2 [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64],
    libbluetooth-dev [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64], locales [!armel !avr32 !hppa !ia64 !mipsel],
    libsqlite3-dev, libffi-dev (>= 3.0.5-2), libgdbm-dev,
-   gdb, python
+   gdb, python,
+   dpkg-dev (>= 1.16.1~)
 Build-Depends-Indep: python-sphinx (>= 1.0.7)
 Build-Conflicts: tcl8.4-dev, tk8.4-dev, tcl8.3-dev, tk8.3-dev, python2.6-xml, python-xml, autoconf2.13
 XS-Python-Version: 2.6
-Standards-Version: 3.9.3
+Standards-Version: 3.9.4
 Homepage: http://python.org/
 Vcs-Browser: https://bitbucket.org/fk/deadsnakes-python2.6
 Vcs-Hg: https://bitbucket.org/fk/deadsnakes-python2.6
@@ -27,7 +28,7 @@ Depends: python2.6-minimal (= ${binary:Version}), mime-support, ${shlibs:Depends
 Suggests: python2.6-doc, binutils
 Provides: python2.6-cjkcodecs, python2.6-ctypes, python2.6-elementtree, python2.6-celementtree, python2.6-wsgiref, python2.6-profiler
 XB-Python-Version: 2.6
-Description: An interactive high-level object-oriented language (version 2.6)
+Description: Interactive high-level object-oriented language (version 2.6)
  Version 2.6 of the high-level, interactive object oriented language,
  includes an extensive class library with lots of goodies for
  network programming, system administration, sounds and graphics.
@@ -41,7 +42,7 @@ Suggests: binfmt-support
 Conflicts: binfmt-support (<< 1.1.2)
 XB-Python-Runtime: python2.6
 XB-Python-Version: 2.6
-Description: A minimal subset of the Python language (version 2.6)
+Description: Minimal subset of the Python language (version 2.6)
  This package contains the interpreter and some essential modules.  It can
  be used in the boot process for some basic tasks.
  See /usr/share/doc/python2.6-minimal/README.Debian for a list of the modules
@@ -83,7 +84,7 @@ Architecture: all
 Depends: python2.6, python2.6-tk, ${misc:Depends}
 Enhances: python2.6
 XB-Python-Version: 2.6
-Description: An IDE for Python (version 2.6) using Tkinter
+Description: IDE for Python (version 2.6) using Tkinter
  IDLE is an Integrated Development Environment for Python (version 2.6).
  IDLE is written using Tkinter and therefore quite platform-independent.
 
@@ -103,7 +104,7 @@ Architecture: all
 Depends: ${misc:Depends}, libjs-jquery
 Suggests: python2.6
 Description: Documentation for the high-level object-oriented language Python (version 2.6)
- These is the official set of documentation for the interactive high-level
+ This is the official set of documentation for the interactive high-level
  object-oriented language Python (version 2.6). All documents are provided
  in HTML format. The package consists of ten documents:
  .
@@ -125,8 +126,8 @@ Provides: ${python:Provides}
 Suggests: tix, python2.6-tk-dbg
 XB-Python-Version: ${python:Versions}
 Description: Tkinter - Writing Tk applications with Python (version 2.6)
- A module for writing portable GUI applications with Python (version 2.6) using Tk.
- Also known as Tkinter.
+ A module for writing portable GUI applications with Python (version 2.6)
+ using Tk. Also known as Tkinter.
 
 Package: python2.6-gdbm
 Architecture: any
@@ -144,10 +145,10 @@ Priority: extra
 Section: debug
 Depends: python2.6, ${python:Depends}, python2.6-tk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Tkinter - Writing Tk applications with Python (version 2.6 debug extension)
- A module for writing portable GUI applications with Python (version 2.6) using Tk.
- Also known as Tkinter.
+ A module for writing portable GUI applications with Python (version 2.6)
+ using Tk. Also known as Tkinter.
  .
- This package contains the extensions built for the python debug interpreter.
+ This package contains the extensions built for the Python debug interpreter.
 
 Package: python2.6-gdbm-dbg
 Architecture: any
@@ -158,7 +159,7 @@ Description: GNU dbm database support for Python (version 2.6 debug extension)
  GNU dbm database module for Python (version 2.6). Install this if you want to
  create or read GNU dbm database files with Python.
  .
- This package contains the extensions built for the python debug interpreter.
+ This package contains the extensions built for the Python debug interpreter.
 
 
 Package: python2.6-complete
@@ -166,7 +167,6 @@ Architecture: all
 Priority: extra
 Depends:
  python2.6 (>= ${binary:Version}),
- python2.6-minimal (>= ${binary:Version}),
  libpython2.6 (>= ${binary:Version}),
  python2.6-examples (>= ${binary:Version}),
  python2.6-dev (>= ${binary:Version}),
@@ -177,9 +177,9 @@ Depends:
  python2.6-gdbm (>= ${binary:Version}),
  python2.6-tk-dbg (>= ${binary:Version}),
  python2.6-gdbm-dbg (>= ${binary:Version}),
- ${shlibs:Depends}, ${misc:Depends}
+ ${misc:Depends}
 XB-Python-Version: 2.6
-Description: An interactive high-level object-oriented language (version 2.6)
+Description: Interactive high-level object-oriented language (version 2.6)
  Version 2.6 of the high-level, interactive object oriented language,
  includes an extensive class library with lots of goodies for
  network programming, system administration, sounds and graphics.

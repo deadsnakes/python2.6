@@ -31,7 +31,7 @@
  AC_SUBST(SIGNAL_OBJS)
 --- a/setup.py
 +++ b/setup.py
-@@ -1130,41 +1130,74 @@
+@@ -1149,41 +1149,74 @@
          else:
              missing.append('bsddb185')
  
