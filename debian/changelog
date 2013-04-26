@@ -5,7 +5,7 @@ python2.6 (2.6.8-3+precise1) precise; urgency=low
   * Don't add rpath to extension modules.
   * Enable hardening options.
 
- -- Felix Krull <f_krull@gmx.de>  Fri, 26 Apr 2013 14:32:28 +0200
+ -- Felix Krull <f_krull@gmx.de>  Fri, 26 Apr 2013 17:03:07 +0200
 
 python2.6 (2.6.8-2+precise1) precise; urgency=low
 
