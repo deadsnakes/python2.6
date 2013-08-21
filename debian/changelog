@@ -1,3 +1,9 @@
+python2.6 (2.6.8-4+raring1) raring; urgency=low
+
+  * Import from Precise package.
+
+ -- Felix Krull <f_krull@gmx.de>  Wed, 21 Aug 2013 19:22:49 +0200
+
 python2.6 (2.6.8-4+precise1) precise; urgency=low
 
   * Backport bsddb package from Python 2.7.5.
