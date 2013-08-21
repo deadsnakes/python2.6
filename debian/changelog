@@ -1,3 +1,11 @@
+python2.6 (2.6.8-4+precise1) precise; urgency=low
+
+  * Backport bsddb package from Python 2.7.5.
+  * Properly build _bsddb against system default libdb (5.1 or 5.3
+    depending on the system release).
+
+ -- Felix Krull <f_krull@gmx.de>  Wed, 21 Aug 2013 18:28:48 +0200
+
 python2.6 (2.6.8-3+quantal1) quantal; urgency=low
 
   * Import from Precise package.
