@@ -1,3 +1,9 @@
+python2.6 (2.6.8-5+raring1) raring; urgency=low
+
+  * Imported from Precise package.
+
+ -- Felix Krull <f_krull@gmx.de>  Tue, 29 Oct 2013 00:08:14 +0100
+
 python2.6 (2.6.8-5+precise1) precise; urgency=low
 
   * Fix ncurses header detection. #6
