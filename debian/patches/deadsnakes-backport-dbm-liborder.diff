@@ -4,7 +4,7 @@
 
 --- a/configure.in
 +++ b/configure.in
-@@ -2066,6 +2066,24 @@
+@@ -2059,6 +2059,24 @@
  
  AC_MSG_RESULT($with_system_ffi)
  
