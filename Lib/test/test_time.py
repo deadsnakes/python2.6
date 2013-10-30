@@ -1,4 +1,5 @@
 from test import test_support
+from os import environ
 import time
 import unittest
 
@@ -227,6 +228,37 @@ class TimeTestCase(unittest.TestCase):
         t0 = time.mktime(lt0)
         t1 = time.mktime(lt1)
         self.assert_(0 <= (t1-t0) < 0.2)
+
+    # Check for problems with tm_gmtoff in struct time. These can bite us
+    # on BSD-derived libc's. The primary (only?) sympton is to break the
+    # strftime %z format.
+    def test_tm_gmtoff1(self):
+        # The %z format is not guaranteed to be supported by the libc
+        # strftime(), but strftime(fmt) is documented to work the same as
+        # as strftime(fmt, localtime()) in all cases.
+        self.failUnlessEqual(
+                time.strftime("%z"), time.strftime("%z", time.localtime()))
+
+    @unittest.skipUnless(hasattr(time, "tzset"), "tzset not available")
+    def test_tm_gmtoff2(self):
+        # The %z format is not guaranteed to be supported by the libc
+        # strftime(), but if it is US Eastern timezone should never 
+        # return +0.
+        eastern = "EST+05EDT,M4.1.0,M10.5.0"
+        org_TZ = environ.get("TZ", None)
+        try:
+            environ["TZ"] = eastern
+            time.tzset()
+            self.assertNotEqual(
+                    time.strftime("%z", time.localtime()), "+0000")
+        finally:
+            # Repair TZ environment variable in case any other tests
+            # rely on it.
+            if org_TZ is not None:
+                environ["TZ"] = org_TZ
+            elif "TZ" in environ:
+                del environ["TZ"]
+            time.tzset()
 
 def test_main():
     test_support.run_unittest(TimeTestCase)
