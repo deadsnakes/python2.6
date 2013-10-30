@@ -345,14 +345,6 @@ gettmarg(PyObject *args, struct tm *p)
     int y;
     memset((void *) p, '\0', sizeof(struct tm));
 
-#ifdef HAVE_TM_ZONE
-	/* Use mktime to normalize the struct tm field tm_gmtoff to
-	   the current timezone offset for the benefit of the
-	   BSD-style struct tm's that have it.  Without this we would
-	   lie to these libc's by using a struct tm that says we are
-	   in GMT.  */
-	mktime(p);
-#endif
     if (!PyArg_Parse(args, "(iiiiiiiii)",
                      &y,
                      &p->tm_mon,

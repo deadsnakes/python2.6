@@ -260,7 +260,6 @@ then
 	MACHDEP="$ac_md_system$ac_md_release"
 
 	case $MACHDEP in
-	linux3) MACHDEP="linux2";;
 	cygwin*) MACHDEP="cygwin";;
 	darwin*) MACHDEP="darwin";;
 	atheos*) MACHDEP="atheos";;
@@ -619,7 +618,7 @@ AC_SUBST(LIBRARY)
 AC_MSG_CHECKING(LIBRARY)
 if test -z "$LIBRARY"
 then
-	LIBRARY='libpython$(VERSION)$(DEBUG_EXT).a'
+	LIBRARY='libpython$(VERSION).a'
 fi
 AC_MSG_RESULT($LIBRARY)
 
@@ -747,8 +746,8 @@ if test $enable_shared = "yes"; then
 	  INSTSONAME="$LDLIBRARY".$SOVERSION
           ;;
     Linux*|GNU*|NetBSD*|FreeBSD*|DragonFly*)
-	  LDLIBRARY='libpython$(VERSION)$(DEBUG_EXT).so'
-	  BLDLIBRARY='-L. -lpython$(VERSION)$(DEBUG_EXT)'
+	  LDLIBRARY='libpython$(VERSION).so'
+	  BLDLIBRARY='-L. -lpython$(VERSION)'
 	  RUNSHARED=LD_LIBRARY_PATH=`pwd`:${LD_LIBRARY_PATH}
 	  case $ac_sys_system in
 	      FreeBSD*)
@@ -845,12 +844,6 @@ then
 else AC_MSG_RESULT(no); Py_DEBUG='false'
 fi],
 [AC_MSG_RESULT(no)])
-
-if test "$Py_DEBUG" = 'true'
-then
-	DEBUG_EXT=_d
-fi
-AC_SUBST(DEBUG_EXT)
 
 # XXX Shouldn't the code above that fiddles with BASECFLAGS and OPT be
 # merged with this chunk of code?
@@ -1325,9 +1318,9 @@ dnl AC_MSG_RESULT($cpp_type)
 
 # checks for header files
 AC_HEADER_STDC
-AC_CHECK_HEADERS(asm/types.h conio.h direct.h dlfcn.h errno.h \
+AC_CHECK_HEADERS(asm/types.h conio.h curses.h direct.h dlfcn.h errno.h \
 fcntl.h grp.h \
-ieeefp.h io.h langinfo.h libintl.h poll.h process.h pthread.h \
+ieeefp.h io.h langinfo.h libintl.h ncurses.h poll.h process.h pthread.h \
 shadow.h signal.h stdint.h stropts.h termios.h thread.h \
 unistd.h utime.h \
 sys/audioio.h sys/bsdtty.h sys/epoll.h sys/event.h sys/file.h sys/loadavg.h \
@@ -1339,6 +1332,13 @@ sys/resource.h netpacket/packet.h sysexits.h bluetooth.h \
 bluetooth/bluetooth.h linux/tipc.h)
 AC_HEADER_DIRENT
 AC_HEADER_MAJOR
+
+# On Solaris, term.h requires curses.h
+AC_CHECK_HEADERS(term.h,,,[
+#ifdef HAVE_CURSES_H
+#include <curses.h>
+#endif
+])
 
 # On Linux, netlink.h requires asm/types.h
 AC_CHECK_HEADERS(linux/netlink.h,,,[
@@ -1738,7 +1738,7 @@ then
 		esac
 		;;
 	CYGWIN*)   SO=.dll;;
-	*)	   SO=$DEBUG_EXT.so;;
+	*)	   SO=.so;;
 	esac
 else
 	# this might also be a termcap variable, see #610332
@@ -1829,7 +1829,7 @@ then
 			fi
 		fi
 		;;
-	Linux*|GNU*|QNX*) LDSHARED='$(CC) -shared -Wl,-O1 -Wl,-Bsymbolic-functions';;
+	Linux*|GNU*|QNX*) LDSHARED='$(CC) -shared';;
 	BSD/OS*/4*) LDSHARED="gcc -shared";;
 	FreeBSD*)
 		if [[ "`$CC -dM -E - </dev/null | grep __ELF__`" != "" ]]
@@ -1916,7 +1916,7 @@ then
 	    LINKFORSHARED="-Wl,-E -Wl,+s";;
 #	    LINKFORSHARED="-Wl,-E -Wl,+s -Wl,+b\$(BINLIBDEST)/lib-dynload";;
 	BSD/OS/4*) LINKFORSHARED="-Xlinker -export-dynamic";;
-	Linux*|GNU*) LINKFORSHARED="-Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions";;
+	Linux*|GNU*) LINKFORSHARED="-Xlinker -export-dynamic";;
 	# -u libsys_s pulls in all symbols in libsys
 	Darwin/*) 
 		# -u _PyMac_Error is needed to pull in the mac toolbox glue,
@@ -2046,37 +2046,12 @@ LIBS="$withval $LIBS"
 ],
 [AC_MSG_RESULT(no)])
 
-# Check for use of the system expat library
-AC_MSG_CHECKING(for --with-system-expat)
-AC_ARG_WITH(system_expat,
-            AC_HELP_STRING(--with-system-expat, build pyexpat module using an installed expat library))
-
-AC_MSG_RESULT($with_system_expat)
-
 # Check for use of the system libffi library
 AC_MSG_CHECKING(for --with-system-ffi)
 AC_ARG_WITH(system_ffi,
             AC_HELP_STRING(--with-system-ffi, build _ctypes module using an installed ffi library))
 
 AC_MSG_RESULT($with_system_ffi)
-
-# Check for --with-dbmliborder
-AC_MSG_CHECKING(for --with-dbmliborder)
-AC_ARG_WITH(dbmliborder,
-            AS_HELP_STRING([--with-dbmliborder=db1:db2:...], [order to check db backends for dbm. Valid value is a colon separated string with the backend names `ndbm', `gdbm' and `bdb'.]),
-[
-if test x$with_dbmliborder = xyes
-then
-AC_MSG_ERROR([proper usage is --with-dbmliborder=db1:db2:...])
-else
-  for db in `echo $with_dbmliborder | sed 's/:/ /g'`; do
-    if test x$db != xndbm && test x$db != xgdbm && test x$db != xbdb
-    then
-      AC_MSG_ERROR([proper usage is --with-dbmliborder=db1:db2:...])
-    fi
-  done
-fi])
-AC_MSG_RESULT($with_dbmliborder)
 
 # Determine if signalmodule should be used.
 AC_SUBST(USE_SIGNAL_MODULE)
@@ -3808,17 +3783,6 @@ then
   [Define if you have struct stat.st_mtimensec])
 fi
 
-ac_save_cppflags="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS -I/usr/include/ncursesw"
-AC_CHECK_HEADERS(curses.h ncurses.h)
-
-# On Solaris, term.h requires curses.h
-AC_CHECK_HEADERS(term.h,,,[
-#ifdef HAVE_CURSES_H
-#include <curses.h>
-#endif
-])
-
 # On HP/UX 11.0, mvwdelch is a block with a return statement
 AC_MSG_CHECKING(whether mvwdelch is an expression)
 AC_CACHE_VAL(ac_cv_mvwdelch_is_expression,
@@ -3971,7 +3935,7 @@ done
 AC_MSG_RESULT(done)
 
 # generate output files
-AC_CONFIG_FILES(Makefile.pre Modules/Setup.config Misc/python.pc)
+AC_CONFIG_FILES(Makefile.pre Modules/Setup.config)
 AC_OUTPUT
 
 echo "creating Modules/Setup"

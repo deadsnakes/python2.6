@@ -354,33 +354,10 @@ class PyBuildExt(build_ext):
                 return platform
         return sys.platform
 
-    def add_multiarch_paths(self):
-        # Debian/Ubuntu multiarch support.
-        # https://wiki.ubuntu.com/MultiarchSpec
-        if not find_executable('dpkg-architecture'):
-            return
-        tmpfile = os.path.join(self.build_temp, 'multiarch')
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        ret = os.system(
-            'dpkg-architecture -qDEB_HOST_MULTIARCH > %s 2> /dev/null' %
-            tmpfile)
-        try:
-            if ret >> 8 == 0:
-                with open(tmpfile) as fp:
-                    multiarch_path_component = fp.readline().strip()
-                add_dir_to_list(self.compiler.library_dirs,
-                                '/usr/lib/' + multiarch_path_component)
-                add_dir_to_list(self.compiler.include_dirs,
-                                '/usr/include/' + multiarch_path_component)
-        finally:
-            os.unlink(tmpfile)
-
     def detect_modules(self):
-        # On Debian /usr/local is always used, so we don't include it twice
-        #add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
-        #add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
-        self.add_multiarch_paths()
+        # Ensure that /usr/local is always used
+        add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
+        add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
 
         # Add paths specified in the environment variables LDFLAGS and
         # CPPFLAGS for header and library files.
@@ -805,8 +782,8 @@ class PyBuildExt(build_ext):
         # a release.  Most open source OSes come with one or more
         # versions of BerkeleyDB already installed.
 
-        max_db_ver = (5, 3)
-        min_db_ver = (4, 8)
+        max_db_ver = (4, 7)
+        min_db_ver = (3, 3)
         db_setup_debug = False   # verbose debug prints from this script?
 
         def allow_db_ver(db_ver):
@@ -983,22 +960,18 @@ class PyBuildExt(build_ext):
             if db_setup_debug:
                 print "bsddb using BerkeleyDB lib:", db_ver, dblib
                 print "bsddb lib dir:", dblib_dir, " inc dir:", db_incdir
-            # only add db_incdir/dblib_dir if not in the standard paths
-            if db_incdir in inc_dirs:
-                db_incs = []
-            else:
-                db_incs = [db_incdir]
-            if dblib_dir[0] in lib_dirs:
-                dblib_dir = []
+            db_incs = [db_incdir]
             dblibs = [dblib]
-            # We don't add the runtime_library_dirs argument because the db
-            # library should always be in the dynamic library search path on
-            # Debian and later versions of lintian complain about rpath in
-            # binaries.
+            # We add the runtime_library_dirs argument because the
+            # BerkeleyDB lib we're linking against often isn't in the
+            # system dynamic library search path.  This is usually
+            # correct and most trouble free, but may cause problems in
+            # some unusual system configurations (e.g. the directory
+            # is on an NFS server that goes away).
             exts.append(Extension('_bsddb', ['_bsddb.c'],
                                   depends = ['bsddb.h'],
                                   library_dirs=dblib_dir,
-                                  #runtime_library_dirs=dblib_dir,
+                                  runtime_library_dirs=dblib_dir,
                                   include_dirs=db_incs,
                                   libraries=dblibs))
         else:
@@ -1104,7 +1077,7 @@ class PyBuildExt(build_ext):
                                   include_dirs=["Modules/_sqlite",
                                                 sqlite_incdir],
                                   library_dirs=sqlite_libdir,
-                                  #runtime_library_dirs=sqlite_libdir,
+                                  runtime_library_dirs=sqlite_libdir,
                                   extra_link_args=sqlite_extra_link_args,
                                   libraries=["sqlite3",]))
         else:
@@ -1147,74 +1120,41 @@ class PyBuildExt(build_ext):
         else:
             missing.append('bsddb185')
 
-        dbm_order = ['gdbm']
         # The standard Unix dbm module:
         if platform not in ['cygwin']:
-            config_args = [arg.strip("'")
-                           for arg in sysconfig.get_config_var("CONFIG_ARGS").split()]
-            dbm_args = [arg for arg in config_args
-                        if arg.startswith('--with-dbmliborder=')]
-            if dbm_args:
-                dbm_order = [arg.split('=')[-1] for arg in dbm_args][-1].split(":")
-            else:
-                dbm_order = "ndbm:gdbm:bdb".split(":")
-            dbmext = None
-            for cand in dbm_order:
-                if cand == "ndbm":
-                    if find_file("ndbm.h", inc_dirs, []) is not None:
-                        # Some systems have -lndbm, others don't
-                        if self.compiler.find_library_file(lib_dirs,
-                                                               'ndbm'):
-                            ndbm_libs = ['ndbm']
-                        else:
-                            ndbm_libs = []
-                        print "building dbm using ndbm"
-                        dbmext = Extension('dbm', ['dbmmodule.c'],
-                                           define_macros=[
-                                               ('HAVE_NDBM_H',None),
-                                               ],
-                                           libraries=ndbm_libs)
-                        break
-
-                elif cand == "gdbm":
-                    if self.compiler.find_library_file(lib_dirs, 'gdbm'):
-                        gdbm_libs = ['gdbm']
-                        if self.compiler.find_library_file(lib_dirs,
-                                                               'gdbm_compat'):
-                            gdbm_libs.append('gdbm_compat')
-                        if find_file("gdbm/ndbm.h", inc_dirs, []) is not None:
-                            print "building dbm using gdbm"
-                            dbmext = Extension(
-                                'dbm', ['dbmmodule.c'],
-                                define_macros=[
-                                    ('HAVE_GDBM_NDBM_H', None),
-                                    ],
-                                libraries = gdbm_libs)
-                            break
-                        if find_file("gdbm-ndbm.h", inc_dirs, []) is not None:
-                            print "building dbm using gdbm"
-                            dbmext = Extension(
-                                'dbm', ['dbmmodule.c'],
-                                define_macros=[
-                                    ('HAVE_GDBM_DASH_NDBM_H', None),
-                                    ],
-                                libraries = gdbm_libs)
-                            break
-                elif cand == "bdb":
-                    if db_incs is not None:
-                        print "building dbm using bdb"
-                        dbmext = Extension('dbm', ['dbmmodule.c'],
-                                           library_dirs=dblib_dir,
-                                           #runtime_library_dirs=dblib_dir,
-                                           include_dirs=db_incs,
-                                           define_macros=[
-                                               ('HAVE_BERKDB_H', None),
-                                               ('DB_DBM_HSEARCH', None),
-                                               ],
-                                           libraries=dblibs)
-                        break
-            if dbmext is not None:
-                exts.append(dbmext)
+            if find_file("ndbm.h", inc_dirs, []) is not None:
+                # Some systems have -lndbm, others don't
+                if self.compiler.find_library_file(lib_dirs, 'ndbm'):
+                    ndbm_libs = ['ndbm']
+                else:
+                    ndbm_libs = []
+                exts.append( Extension('dbm', ['dbmmodule.c'],
+                                       define_macros=[('HAVE_NDBM_H',None)],
+                                       libraries = ndbm_libs ) )
+            elif self.compiler.find_library_file(lib_dirs, 'gdbm'):
+                gdbm_libs = ['gdbm']
+                if self.compiler.find_library_file(lib_dirs, 'gdbm_compat'):
+                    gdbm_libs.append('gdbm_compat')
+                if find_file("gdbm/ndbm.h", inc_dirs, []) is not None:
+                    exts.append( Extension(
+                        'dbm', ['dbmmodule.c'],
+                        define_macros=[('HAVE_GDBM_NDBM_H',None)],
+                        libraries = gdbm_libs ) )
+                elif find_file("gdbm-ndbm.h", inc_dirs, []) is not None:
+                    exts.append( Extension(
+                        'dbm', ['dbmmodule.c'],
+                        define_macros=[('HAVE_GDBM_DASH_NDBM_H',None)],
+                        libraries = gdbm_libs ) )
+                else:
+                    missing.append('dbm')
+            elif db_incs is not None:
+                exts.append( Extension('dbm', ['dbmmodule.c'],
+                                       library_dirs=dblib_dir,
+                                       runtime_library_dirs=dblib_dir,
+                                       include_dirs=db_incs,
+                                       define_macros=[('HAVE_BERKDB_H',None),
+                                                      ('DB_DBM_HSEARCH',None)],
+                                       libraries=dblibs))
             else:
                 missing.append('dbm')
 
@@ -1252,7 +1192,6 @@ class PyBuildExt(build_ext):
         # Curses support, requiring the System V version of curses, often
         # provided by the ncurses library.
         panel_library = 'panel'
-        ncursesw_incdirs = ["/usr/include/ncursesw"]
         if curses_library.startswith('ncurses'):
             if curses_library == 'ncursesw':
                 # Bug 1464056: If _curses.so links with ncursesw,
@@ -1260,8 +1199,7 @@ class PyBuildExt(build_ext):
                 panel_library = 'panelw'
             curses_libs = [curses_library]
             exts.append( Extension('_curses', ['_cursesmodule.c'],
-                                   libraries = curses_libs,
-                                   include_dirs = ncursesw_incdirs) )
+                                   libraries = curses_libs) )
         elif curses_library == 'curses' and platform != 'darwin':
                 # OSX has an old Berkeley curses, not good enough for
                 # the _curses module.
@@ -1281,13 +1219,9 @@ class PyBuildExt(build_ext):
         if (module_enabled(exts, '_curses') and
             self.compiler.find_library_file(lib_dirs, panel_library)):
             exts.append( Extension('_curses_panel', ['_curses_panel.c'],
-                                   libraries = [panel_library] + curses_libs,
-                                   include_dirs = ncursesw_incdirs) )
+                                   libraries = [panel_library] + curses_libs) )
         else:
             missing.append('_curses_panel')
-
-        #fpectl fpectlmodule.c ...
-        exts.append( Extension('fpectl', ['fpectlmodule.c']) )
 
         # Andrew Kuchling's zlib module.  Note that some versions of zlib
         # 1.1.3 have security problems.  See CERT Advisory CA-2002-07:
@@ -1370,26 +1304,19 @@ class PyBuildExt(build_ext):
         #
         # More information on Expat can be found at www.libexpat.org.
         #
-        if '--with-system-expat' in sysconfig.get_config_var("CONFIG_ARGS"):
-            expat_inc = []
-            define_macros = []
-            expat_lib = ['expat']
-            expat_sources = []
-        else:
-            expat_inc = [os.path.join(os.getcwd(), srcdir, 'Modules', 'expat')]
-            define_macros = [
-                ('HAVE_EXPAT_CONFIG_H', '1'),
-            ]
-            expat_lib = []
-            expat_sources = ['expat/xmlparse.c',
-                             'expat/xmlrole.c',
-                             'expat/xmltok.c']
+        expatinc = os.path.join(os.getcwd(), srcdir, 'Modules', 'expat')
+        define_macros = [
+            ('HAVE_EXPAT_CONFIG_H', '1'),
+        ]
 
         exts.append(Extension('pyexpat',
                               define_macros = define_macros,
-                              include_dirs = expat_inc,
-                              libraries = expat_lib,
-                              sources = ['pyexpat.c'] + expat_sources
+                              include_dirs = [expatinc],
+                              sources = ['pyexpat.c',
+                                         'expat/xmlparse.c',
+                                         'expat/xmlrole.c',
+                                         'expat/xmltok.c',
+                                         ],
                               ))
 
         # Fredrik Lundh's cElementTree module.  Note that this also
@@ -1399,8 +1326,7 @@ class PyBuildExt(build_ext):
             define_macros.append(('USE_PYEXPAT_CAPI', None))
             exts.append(Extension('_elementtree',
                                   define_macros = define_macros,
-                                  include_dirs = expat_inc,
-                                  libraries = expat_lib,
+                                  include_dirs = [expatinc],
                                   sources = ['_elementtree.c'],
                                   ))
         else:
@@ -2001,10 +1927,6 @@ class PyBuildExt(build_ext):
             ext.include_dirs.extend(ffi_inc)
             ext.libraries.append(ffi_lib)
             self.use_system_libffi = True
-
-        if not self.use_system_libffi:
-            print >> sys.stderr, "Error: not using system libffi"
-            sys.exit(1)
 
 
 class PyBuildInstall(install):
