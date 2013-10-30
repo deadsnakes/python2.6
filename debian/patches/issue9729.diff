@@ -55,7 +55,7 @@
          if self._sslobj:
 --- a/Lib/test/test_ssl.py
 +++ b/Lib/test/test_ssl.py
-@@ -109,6 +109,19 @@
+@@ -130,6 +130,19 @@
          del ss
          self.assertEqual(wr(), None)
  

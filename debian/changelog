@@ -1,3 +1,10 @@
+python2.6 (2.6.9-1+precise1) precise; urgency=low
+
+  * Imported new upstream release Python 2.6.9.
+  * Fix some doc syntax errors.
+
+ -- Felix Krull <f_krull@gmx.de>  Wed, 30 Oct 2013 13:37:58 +0100
+
 python2.6 (2.6.8-5+raring1) raring; urgency=low
 
   * Imported from Precise package.

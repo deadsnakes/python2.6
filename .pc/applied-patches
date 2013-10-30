@@ -35,7 +35,6 @@ issue9729.diff
 issue762963.diff
 issue1113244.diff
 locale-module-updates.diff
-no-openssl-v2.diff
 langpack-gettext.diff
 deadsnakes-ncursesw-include-dir.diff
 deadsnakes-add-multiarch-paths.diff
@@ -46,3 +45,4 @@ deadsnakes-build-info-string-from-py2.7.diff
 deadsnakes-backport-pkg-config-support.diff
 deadsnakes-no-rpath.diff
 deadsnakes-bsddb-module-py2.7.x.diff
+deadsnakes-fix-doc-errors.diff

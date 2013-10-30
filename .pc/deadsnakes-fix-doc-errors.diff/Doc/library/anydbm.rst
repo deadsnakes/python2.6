@@ -6,7 +6,6 @@
 
 
 .. note::
-
    The :mod:`anydbm` module has been renamed to :mod:`dbm` in Python 3.0.  The
    :term:`2to3` tool will automatically adapt imports when converting your
    sources to 3.0.

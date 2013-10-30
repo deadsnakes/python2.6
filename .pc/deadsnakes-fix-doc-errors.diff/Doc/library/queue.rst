@@ -5,7 +5,6 @@
    :synopsis: A synchronized queue class.
 
 .. note::
-
    The :mod:`Queue` module has been renamed to :mod:`queue` in Python 3.0.  The
    :term:`2to3` tool will automatically adapt imports when converting your
    sources to 3.0.
