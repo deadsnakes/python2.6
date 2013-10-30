@@ -6,7 +6,6 @@
    :synopsis: GNU's reinterpretation of dbm.
 
 .. note::
-
    The :mod:`gdbm` module has been renamed to :mod:`dbm.gnu` in Python 3.0.  The
    :term:`2to3` tool will automatically adapt imports when converting your
    sources to 3.0.
