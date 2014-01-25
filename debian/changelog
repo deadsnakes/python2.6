@@ -1,3 +1,9 @@
+python2.6 (2.6.9-1+trusty1) trusty; urgency=low
+
+  * Imported from Precise package.
+
+ -- Felix Krull <f_krull@gmx.de>  Sat, 25 Jan 2014 19:43:45 +0100
+
 python2.6 (2.6.9-1+precise1) precise; urgency=low
 
   * Imported new upstream release Python 2.6.9.
