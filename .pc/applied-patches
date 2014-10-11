@@ -47,3 +47,4 @@ deadsnakes-no-rpath.diff
 deadsnakes-bsddb-module-py2.7.x.diff
 deadsnakes-fix-doc-errors.diff
 deadsnakes-fix-sphinx1.2-docs-build.diff
+ext-no-libpython-link.diff
