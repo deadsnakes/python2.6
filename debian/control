@@ -20,6 +20,7 @@ Vcs-Browser: https://bitbucket.org/fk/deadsnakes-python2.6
 Vcs-Hg: https://bitbucket.org/fk/deadsnakes-python2.6
 X-Original-Vcs-Browser: https://code.launchpad.net/~doko/python/pkg2.6
 X-Original-Vcs-Bzr: http://bazaar.launchpad.net/~doko/python/pkg2.6
+XS-Testsuite: autopkgtest
 
 Package: python2.6
 Architecture: any
