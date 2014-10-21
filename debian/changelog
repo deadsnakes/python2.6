@@ -1,3 +1,10 @@
+python2.6 (2.6.9-3+trusty1) trusty; urgency=medium
+
+  * Imported from Precise package.
+  * Fix readline 6.3 build.
+
+ -- Felix Krull <f_krull@gmx.de>  Wed, 22 Oct 2014 01:16:29 +0200
+
 python2.6 (2.6.9-3+precise1) precise; urgency=medium
 
   * Link to shared libffi.
