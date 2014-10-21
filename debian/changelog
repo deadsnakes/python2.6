@@ -1,3 +1,11 @@
+python2.6 (2.6.9-3+precise1) precise; urgency=medium
+
+  * Link to shared libffi.
+  * Build _ssl and _hashlib as extension modules, rather than built into the
+    binary.
+
+ -- Felix Krull <f_krull@gmx.de>  Wed, 22 Oct 2014 00:56:34 +0200
+
 python2.6 (2.6.9-2+precise1) precise; urgency=medium
 
   * Don't link extension modules to libpython on shared builds.
