@@ -16,12 +16,12 @@ are:
   _collections		extension
   _fileio		extension
   _functools		extension
-  _hashlib		extension
+  _hashlib		extensionx
   _locale		extension
   _random		extension
   _socket		extension
   _sre			builtin
-  _ssl			extension
+  _ssl			extensionx
   _struct		extension
   _symtable		builtin
   _types		builtin
