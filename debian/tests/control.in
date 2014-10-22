@@ -9,3 +9,6 @@ Depends: libc-bin, @PVER@
 
 Tests: regr20-check-dynamic-ctypes
 Depends: libc-bin, @PVER@, @PVER@-dbg
+
+Tests: check-minimal-extensions
+Depends: @PVER@-minimal
