@@ -1161,14 +1161,16 @@
 
 # don't check for the following symbols, found in extensions
 # which either can be built as builtin or extension.
+ (optional)PyFileIO_Type@Base @VER@
 
  (optional)fast_save_leave@Base @VER@
 
-# _check_for_multiple_distdirs@Base @VER@
  (optional)init_ast@Base @VER@
  (optional)init_bisect@Base @VER@
+ (optional)init_bytesio@Base @VER@
  (optional)init_codecs@Base @VER@
  (optional)init_collections@Base @VER@
+ (optional)init_fileio@Base @VER@
  (optional)init_functools@Base @VER@
  (optional)init_hashlib@Base @VER@
  (optional)init_locale@Base @VER@

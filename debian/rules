@@ -691,7 +691,12 @@ endif
 		$(foreach i,$(MIN_ENCODINGS),$(scriptdir)/$(i)) \
 		$(scriptdir)/config/Makefile \
 		usr/include/$(PVER)/pyconfig.h \
-		$(scriptdir)/site.py
+		$(scriptdir)/site.py \
+		`cd $(d); for i in $(MIN_EXTS); do \
+			test -e $(scriptdir)/lib-dynload/$$i*.so \
+			  && echo $(scriptdir)/lib-dynload/$$i*.so; \
+		  done`
+	#ls -l  $(d_min)/$(scriptdir)/lib-dynload/*.so
 
 #		$(foreach i,$(MIN_EXTS),$(scriptdir)/lib-dynload/$(i).so) \
 
@@ -1023,8 +1028,8 @@ endif
 	  fi; \
 	done
 
-	dh_makeshlibs -p$(p_lib) -V '$(p_lib)'
-	dh_makeshlibs -p$(p_dbg) -V '$(p_dbg)'
+	dh_makeshlibs -p$(p_lib) -V '$(p_lib)' -- -c4
+	dh_makeshlibs -p$(p_dbg) -V '$(p_dbg)' -- -c4
 # don't include the following symbols, found in extensions
 # which either can be built as builtin or extension.
 	sed -ri '/^ (_check_|asdl_|fast_save_|init)/d' \
