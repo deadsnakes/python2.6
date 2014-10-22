@@ -41,6 +41,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: python2.6
 Suggests: binfmt-support
 Conflicts: binfmt-support (<< 1.1.2)
+Breaks: python2.6 (<= 2.6.9-3.1)
+Replaces: python2.6 (<= 2.6.9-3.1)
 XB-Python-Runtime: python2.6
 XB-Python-Version: 2.6
 Description: Minimal subset of the Python language (version 2.6)

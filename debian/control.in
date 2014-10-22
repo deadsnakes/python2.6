@@ -41,6 +41,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: @PVER@
 Suggests: binfmt-support
 Conflicts: binfmt-support (<< 1.1.2)
+Breaks: @PVER@ (<= 2.6.9-3.1)
+Replaces: @PVER@ (<= 2.6.9-3.1)
 XB-Python-Runtime: @PVER@
 XB-Python-Version: @VER@
 Description: Minimal subset of the Python language (version @VER@)
