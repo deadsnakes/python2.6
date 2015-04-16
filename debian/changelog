@@ -1,3 +1,9 @@
+python2.6 (2.6.9-3.2+vivid1) vivid; urgency=medium
+
+  * Imported from precise package.
+
+ -- Felix Krull <f_krull@gmx.de>  Thu, 16 Apr 2015 18:53:54 +0200
+
 python2.6 (2.6.9-3.2+precise1) precise; urgency=medium
 
   * Conflict old packages that might've had minimal modules in the main
