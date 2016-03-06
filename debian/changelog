@@ -1,3 +1,9 @@
+python2.6 (2.6.9-3.2+xenial1) xenial; urgency=medium
+
+  * Imported from Wily package.
+
+ -- Felix Krull <f_krull@gmx.de>  Sun, 06 Mar 2016 01:20:35 +0100
+
 python2.6 (2.6.9-3.2+wily1) wily; urgency=medium
 
   * Imported from Vivid package.
