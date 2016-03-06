@@ -1,0 +1,12 @@
+# Make sure sys.platform is linux2 even with Linux 3.*.
+
+--- a/configure.in
++++ b/configure.in
+@@ -260,6 +260,7 @@
+ 	MACHDEP="$ac_md_system$ac_md_release"
+ 
+ 	case $MACHDEP in
++	linux3) MACHDEP="linux2";;
+ 	cygwin*) MACHDEP="cygwin";;
+ 	darwin*) MACHDEP="darwin";;
+ 	atheos*) MACHDEP="atheos";;
