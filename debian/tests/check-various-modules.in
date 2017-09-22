@@ -1,9 +1,0 @@
-#!/bin/sh
-set -e
-
-MODS="ssl readline curses gdbm Tkinter test.test_support bsddb _hashlib"
-for mod in $MODS; do
-  @PVER@ -c "import $mod"
-done
-
-@PVER@ -c "from _multiprocessing import SemLock"

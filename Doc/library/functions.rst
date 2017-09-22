@@ -1232,7 +1232,6 @@ available.  They are listed here in alphabetical order.
    is useful for classmethods).
 
    .. note::
-
       :func:`super` only works for :term:`new-style class`\es.
 
    There are two typical use cases for *super*.  In a class hierarchy with

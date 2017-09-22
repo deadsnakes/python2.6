@@ -1000,12 +1000,11 @@ class CrashAndBurn(unittest.TestCase) :
     #    # See http://bugs.python.org/issue3307
     #    self.assertRaises(db.DBInvalidArgError, db.DB, None, 65535)
 
-    if db.version() < (4, 8) :
-        def test02_DBEnv_dealloc(self):
-            # http://bugs.python.org/issue3885
-            import gc
-            self.assertRaises(db.DBInvalidArgError, db.DBEnv, ~db.DB_RPCCLIENT)
-            gc.collect()
+    def test02_DBEnv_dealloc(self):
+        # http://bugs.python.org/issue3885
+        import gc
+        self.assertRaises(db.DBInvalidArgError, db.DBEnv, ~db.DB_RPCCLIENT)
+        gc.collect()
 
 
 #----------------------------------------------------------------------
